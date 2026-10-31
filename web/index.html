@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en" data-app="wizard-garmin" data-version="0.1.0">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <title>Garmin</title>
+  <script src="boot.js"></script>
+  <link rel="stylesheet" href="wizard-tokens.css">
+  <link rel="stylesheet" href="wizard-ui.css">
+  <link rel="stylesheet" href="standalone.css">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="/wizard-os-home/core/app-client.js"></script>
+  <script defer src="wizard-sheet.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="wz-app">
+    <main class="wz-scroll" id="main">
+      <section class="hl-top" aria-label="Garmin connection">
+        <div class="wz-conn hl-solid">
+          <div class="wz-tile hl-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.2"/><path d="M9 4.5h6l-.8 2.6h-4.4zM9 19.5h6l-.8-2.6h-4.4z"/></svg></div>
+          <div class="wz-main"><b>Garmin</b><small id="conn-line">Checking…</small></div>
+          <span id="conn-pill" class="wz-pill off">…</span>
+        </div>
+      </section>
+
+      <!-- Connected: the account, one action, details. -->
+      <section id="account" class="hl-account" hidden aria-label="Connected account">
+        <ul class="wz-list hl-solid hl-rows">
+          <li class="wz-row">
+            <span class="wz-tile hl-avatar" aria-hidden="true">G</span>
+            <span class="wz-main"><b>Your Garmin</b><small id="acct-sub"></small></span>
+          </li>
+          <li class="wz-row">
+            <span class="wz-tile hl-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></span>
+            <span class="wz-main"><b id="sync-title">Synced</b><small id="sync-sub"></small></span>
+          </li>
+        </ul>
+        <p id="key-warn" class="hl-warn" hidden></p>
+        <p id="sync-error" class="hl-warn" hidden></p>
+        <div class="wz-actions">
+          <button type="button" class="wz-button" id="sync-now">Sync now</button>
+          <a class="wz-button secondary" id="open-health" href="/wizard-health/">Open Health</a>
+        </div>
+        <p class="hl-hint hl-pad">Your Body Battery, sleep, HRV, heart rate and activity show in the Health app. This app only keeps your Garmin key and the synced copy.</p>
+      </section>
+
+      <!-- Guided setup: shown until Garmin is connected. One step open at a time. -->
+      <section id="setup" class="hl-setup" hidden aria-label="Set up Garmin">
+        <p class="hl-lead">Connect your Garmin in four short steps. You make a personal key on Garmin Connect and paste it here.</p>
+        <ol class="hl-steps">
+          <li class="hl-step" data-step="1">
+            <button type="button" class="hl-step-h"><span class="hl-num">1</span><span class="hl-step-t">Have a Garmin Connect account</span></button>
+            <div class="hl-step-b">
+              <p>You need the free Garmin Connect account your Garmin watch syncs to. There is no fee: Garmin's Personal API is free for your own data.</p>
+              <p class="hl-hint">Body Battery, sleep score and HRV status come from Garmin watches that measure them. No account yet? <a id="signup-link" target="_blank" rel="noopener noreferrer">Open Garmin Connect</a>.</p>
+              <div class="wz-actions"><button type="button" class="wz-button" data-next="2">I have an account</button></div>
+            </div>
+          </li>
+          <li class="hl-step" data-step="2">
+            <button type="button" class="hl-step-h"><span class="hl-num">2</span><span class="hl-step-t">Open your Personal API Key page</span></button>
+            <div class="hl-step-b">
+              <ol class="hl-sub">
+                <li>Open the page below on Garmin Connect (the website, not the phone app).</li>
+                <li>Sign in with your usual Garmin email and password.</li>
+              </ol>
+              <div class="wz-actions">
+                <a class="wz-button" id="key-page-link" target="_blank" rel="noopener noreferrer">Open Garmin Connect</a>
+                <button type="button" class="wz-button secondary" data-next="3">Done, next</button>
+              </div>
+            </div>
+          </li>
+          <li class="hl-step" data-step="3">
+            <button type="button" class="hl-step-h"><span class="hl-num">3</span><span class="hl-step-t">Create a key on Garmin</span></button>
+            <div class="hl-step-b">
+              <ol class="hl-sub">
+                <li>Tap <b>Create Key</b>.</li>
+                <li>Read and accept Garmin's terms. The key is for your own data on your own box.</li>
+                <li>Pick how long it lasts. <b>One year</b> means fewer renewals; Garmin emails you a week before it runs out.</li>
+                <li>Tap <b>Create</b>. Garmin shows the key <b>only once</b>: copy it now, then tap Done.</li>
+              </ol>
+              <div class="wz-actions"><button type="button" class="wz-button" data-next="4">I copied the key</button></div>
+            </div>
+          </li>
+          <li class="hl-step" data-step="4">
+            <button type="button" class="hl-step-h"><span class="hl-num">4</span><span class="hl-step-t">Paste your key</span></button>
+            <div class="hl-step-b">
+              <div id="key-saved" class="hl-saved" hidden>
+                <p><b>Key saved.</b> <span id="key-hint" class="hl-mono"></span> (hidden)</p>
+                <p class="hl-hint" id="key-expiry"></p>
+              </div>
+              <form id="key-form" class="hl-form" autocomplete="off">
+                <label>Personal API key<input class="wz-input" id="f-key" name="api_key" type="password" autocomplete="new-password" spellcheck="false" required></label>
+                <label>It lasts
+                  <select class="wz-input" id="f-expiry" name="expiry_days">
+                    <option value="30">30 days</option><option value="90">90 days</option><option value="180">180 days</option><option value="365" selected>1 year</option>
+                  </select>
+                </label>
+                <div class="wz-actions"><button type="submit" class="wz-button" id="key-save">Save and connect</button></div>
+              </form>
+              <div class="wz-actions">
+                <button type="button" class="wz-button secondary" id="key-test" hidden>Test key</button>
+                <button type="button" class="wz-button secondary" id="key-replace" hidden>Replace key</button>
+              </div>
+              <p id="test-result" class="hl-result" role="status" aria-live="polite"></p>
+              <p class="hl-hint">The app trades the key for a short-lived Garmin sign-in each day. The key stays on this box and is never shown again.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <details class="wz-more" id="more" hidden>
+        <summary>Connection details</summary>
+        <dl class="hl-dl" id="details"></dl>
+        <div class="wz-actions">
+          <button type="button" class="wz-button secondary" id="open-key">Replace key</button>
+          <button type="button" class="wz-button secondary hl-danger" id="open-disconnect">Disconnect</button>
+        </div>
+      </details>
+    </main>
+    <p id="status" class="wz-status wz-sr" role="status" aria-live="polite"></p>
+  </div>
+
+  <dialog class="wz-sheet" id="sheet-key" aria-labelledby="sk-h">
+    <h2 id="sk-h">Replace Garmin key</h2>
+    <p class="hl-hint">Create a new key on your Garmin Connect Personal API Key page and paste it here. The synced history stays.</p>
+    <form id="rk-form" class="hl-form" autocomplete="off">
+      <label>Personal API key<input class="wz-input" id="rk-key" type="password" autocomplete="new-password" spellcheck="false" required></label>
+      <label>It lasts
+        <select class="wz-input" id="rk-expiry"><option value="30">30 days</option><option value="90">90 days</option><option value="180">180 days</option><option value="365" selected>1 year</option></select>
+      </label>
+      <div class="wz-actions"><button type="submit" class="wz-button">Save and test</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="wz-sheet" id="sheet-disconnect" aria-labelledby="sd-h">
+    <h2 id="sd-h">Disconnect Garmin?</h2>
+    <p>The app deletes its synced copy and stops syncing. Health stops showing Garmin data. Your data on Garmin Connect is not touched. To end the key itself, delete it on your Garmin Connect Personal API Key page.</p>
+    <label class="hl-checkrow"><input type="checkbox" id="sd-forget"> Also remove the saved key from this box</label>
+    <div class="wz-actions"><button type="button" class="wz-button hl-danger-fill" id="sd-go">Disconnect</button></div>
+  </dialog>
+</body>
+</html>

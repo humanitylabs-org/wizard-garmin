@@ -1,0 +1,221 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Garmin connector API",
+  "version": "0.1.0",
+  "description": "Box-local API of the Garmin connector (contract wizard.health-data/1, docs/health-data-contract.md). Responses never include the key or tokens."
+ },
+ "paths": {
+  "/healthz": {
+   "get": {
+    "summary": "Health check: version, connection status, last sync",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    }
+   }
+  },
+  "/api/status": {
+   "get": {
+    "summary": "Contract status (wizard.health-data/1): source identity, status, account, dataset id, last/next sync, history span, counts, scales; plus this app's setup state",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    }
+   }
+  },
+  "/api/days": {
+   "get": {
+    "summary": "Contract read, box-only: normalized day records oldest first, paged; changed_since returns only changed days",
+    "parameters": [
+     {
+      "name": "from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      },
+      "description": "YYYY-MM-DD inclusive"
+     },
+     {
+      "name": "to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      },
+      "description": "YYYY-MM-DD inclusive"
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      },
+      "description": "days per page, default 100, max 500"
+     },
+     {
+      "name": "page",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      },
+      "description": "next_page from the previous reply"
+     },
+     {
+      "name": "changed_since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string"
+      },
+      "description": "cursor from an earlier reply; empty = everything"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    }
+   }
+  },
+  "/api/setup": {
+   "get": {
+    "summary": "Setup guide values (dashboard link, scopes, redirect suggestion, whether keys are saved; never the keys)",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    }
+   }
+  },
+  "/api/sync": {
+   "post": {
+    "summary": "Pull new Garmin data now",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    },
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object"
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/disconnect": {
+   "post": {
+    "summary": "Delete the synced copy (and the key with forget_key)",
+    "requestBody": {
+     "required": false,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "forget_key": {
+          "type": "boolean"
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    }
+   }
+  },
+  "/api/key": {
+   "post": {
+    "summary": "Save the Garmin personal API key (stored 0600, never returned) and how long it lasts",
+    "requestBody": {
+     "required": false,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {
+         "api_key": {
+          "type": "string"
+         },
+         "expiry_days": {
+          "type": "integer",
+          "enum": [
+           30,
+           90,
+           180,
+           365
+          ]
+         }
+        }
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    }
+   }
+  },
+  "/api/key/test": {
+   "post": {
+    "summary": "Trade the saved key for an access token at Garmin's token endpoint: valid / invalid / unknown; valid starts the sync",
+    "requestBody": {
+     "required": false,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {}
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    }
+   }
+  },
+  "/api/key/forget": {
+   "post": {
+    "summary": "Delete the saved key",
+    "requestBody": {
+     "required": false,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "properties": {}
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "OK"
+     }
+    }
+   }
+  }
+ }
+}
