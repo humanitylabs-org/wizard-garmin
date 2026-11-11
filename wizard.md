@@ -4,7 +4,7 @@ id: wizard-garmin
 name: Garmin
 type: external
 category: system
-version: 0.1.0
+version: 0.1.1
 summary: Connect your Garmin. Health and your other apps get read-only Body Battery, sleep, HRV, heart rate and activity.
 tags: [data]
 license: GPL-3.0-only
@@ -35,6 +35,9 @@ system: true
 uses: []
 needs: []
 health: /healthz
+switches:
+  contract: wizard.app-switches/1
+  path: /api/switches
 ---
 
 # Garmin

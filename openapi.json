@@ -2,7 +2,7 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Garmin connector API",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Box-local API of the Garmin connector (contract wizard.health-data/1, docs/health-data-contract.md). Responses never include the key or tokens."
  },
  "paths": {
